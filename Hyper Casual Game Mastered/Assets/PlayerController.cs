@@ -12,6 +12,9 @@ public class PlayerController : MonoBehaviour
     public float jumpForce;
     public float gravityForce;
     public float jumpMultiplier;
+    
+    public float leftBound;
+    public float rightBound;
 
     public Vector2 mousePosition;
     public Vector2 playerPosition;
@@ -49,9 +52,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             isDragging = true;
-            if (_mainCamera is not null)
-                mousePosition =
-                    _mainCamera.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
+            mousePosition = _mainCamera.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
             playerPosition = transform.position;
         }
         else if (Input.GetMouseButtonUp(0))
@@ -66,6 +67,15 @@ public class PlayerController : MonoBehaviour
         {
             dragPosition = _mainCamera.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
             transform.position = new Vector2(playerPosition.x + (dragPosition.x - mousePosition.x),transform.position.y);
+
+            if (transform.position.x < leftBound)
+            {
+                transform.position = new Vector2(leftBound,transform.position.y);
+            }
+            if(transform.position.x > rightBound)
+            {
+                transform.position = new Vector2(rightBound,transform.position.y);
+            }
         }
     }
 
