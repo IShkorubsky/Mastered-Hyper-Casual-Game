@@ -7,20 +7,21 @@ using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private Rigidbody2D myRigidbody2D;
+    [SerializeField] private GameObject jumpEffect;
 
     public bool isDragging;
 
     public float jumpForce;
     public float gravityForce;
     public float jumpMultiplier;
-    
+
     public float leftBound;
     public float rightBound;
 
     public Vector2 mousePosition;
     public Vector2 playerPosition;
     public Vector2 dragPosition;
-    
+
     private Camera _mainCamera;
 
     private void Start()
@@ -37,9 +38,18 @@ public class PlayerController : MonoBehaviour
             {
                 jumpForce = gravityForce * jumpMultiplier;
                 myRigidbody2D.velocity = new Vector2(0, jumpForce);
+                ScoreManager.Instance.AddScore();
+                gravityForce += 0.005f;
+                _mainCamera.backgroundColor = other.gameObject.GetComponent<SpriteRenderer>().color;
+                JumpEffect();
                 DestroyAndCreateNewPlatform(other);
             }
         }
+    }
+
+    private void JumpEffect()
+    {
+        Destroy(Instantiate(jumpEffect,transform.position,Quaternion.identity),0.5f);
     }
 
     private void DestroyAndCreateNewPlatform(Collider2D platform)
