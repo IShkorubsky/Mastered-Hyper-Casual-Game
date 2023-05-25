@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -36,8 +37,15 @@ public class PlayerController : MonoBehaviour
             {
                 jumpForce = gravityForce * jumpMultiplier;
                 myRigidbody2D.velocity = new Vector2(0, jumpForce);
+                DestroyAndCreateNewPlatform(other);
             }
         }
+    }
+
+    private void DestroyAndCreateNewPlatform(Collider2D platform)
+    {
+        platform.gameObject.SetActive(false);
+        PlatformSpawner.Instance.CreateNewPlatform();
     }
 
     private void Update()
@@ -45,6 +53,7 @@ public class PlayerController : MonoBehaviour
         AddGravity();
         HandleInput();
         MovePlayer();
+        CheckForDeath();
     }
 
     private void HandleInput()
@@ -82,5 +91,13 @@ public class PlayerController : MonoBehaviour
     private void AddGravity()
     {
         myRigidbody2D.velocity = new Vector2(0, myRigidbody2D.velocity.y - (gravityForce * gravityForce));
+    }
+
+    private void CheckForDeath()
+    {
+        if (transform.position.y < _mainCamera.transform.position.y - 15)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
     }
 }
