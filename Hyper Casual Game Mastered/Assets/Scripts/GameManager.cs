@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private TextMeshProUGUI bestScoreText;
-
+    
     public AudioSource ambientMusic;
 
     public static GameManager Instance;

@@ -1,32 +1,34 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private Rigidbody2D myRigidbody2D;
     [SerializeField] private GameObject jumpEffect;
+    [SerializeField] private GameObject touchToStartText;
 
-    public bool isDragging;
+    private bool _isDragging;
 
-    public float jumpForce;
-    public float gravityForce;
-    public float jumpMultiplier;
+    [SerializeField] private float jumpForce;
+    [SerializeField] private float gravityForce;
+    [SerializeField] private float jumpMultiplier;
 
-    public float leftBound;
-    public float rightBound;
+    [SerializeField] private float leftBound;
+    [SerializeField] private float rightBound;
 
-    public Vector2 mousePosition;
-    public Vector2 playerPosition;
-    public Vector2 dragPosition;
+    private bool _isDead;
+    private bool _isStart;
+
+    private Vector2 _mousePosition;
+    private Vector2 _playerPosition;
+    private Vector2 _dragPosition;
 
     private Camera _mainCamera;
     private AudioSource _jumpSound;
 
     private void Start()
     {
+        _isDead = false;
         _mainCamera = Camera.main;
         _jumpSound = GetComponent<AudioSource>();
         myRigidbody2D = GetComponent<Rigidbody2D>();
@@ -38,6 +40,7 @@ public class PlayerController : MonoBehaviour
         {
             if (myRigidbody2D.velocity.y <= 0f)
             {
+                myRigidbody2D.velocity = Vector2.zero;
                 jumpForce = gravityForce * jumpMultiplier;
                 myRigidbody2D.velocity = new Vector2(0, jumpForce);
                 ScoreManager.Instance.AddScore();
@@ -64,32 +67,55 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        WaitForTouch();
+        if (_isDead)
+        {
+            return;
+        }
+
+        if (!_isStart)
+        {
+            return;
+        }
+        
         AddGravity();
         HandleInput();
         MovePlayer();
         CheckForDeath();
     }
 
+    private void WaitForTouch()
+    {
+        if (!_isStart)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                _isStart = true;
+                touchToStartText.SetActive(false);
+            }
+        }
+    }
+    
     private void HandleInput()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            isDragging = true;
-            mousePosition = _mainCamera.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
-            playerPosition = transform.position;
+            _isDragging = true;
+            _mousePosition = _mainCamera.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
+            _playerPosition = transform.position;
         }
         else if (Input.GetMouseButtonUp(0))
         {
-            isDragging = false;
+            _isDragging = false;
         }
     }
 
     private void MovePlayer()
     {
-        if (isDragging)
+        if (_isDragging)
         {
-            dragPosition = _mainCamera.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
-            transform.position = new Vector2(playerPosition.x + (dragPosition.x - mousePosition.x),transform.position.y);
+            _dragPosition = _mainCamera.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
+            transform.position = new Vector2(_playerPosition.x + (_dragPosition.x - _mousePosition.x),transform.position.y);
 
             if (transform.position.x < leftBound)
             {
@@ -111,6 +137,7 @@ public class PlayerController : MonoBehaviour
     {
         if (transform.position.y < _mainCamera.transform.position.y - 15)
         {
+            _isDead = true;
             GameManager.Instance.GameOver();
         }
     }
