@@ -11,6 +11,7 @@
         <e p="Scenes" t="Include" />
         <e p="Scripts" t="Include">
           <e p="CameraFollow.cs" t="Include" />
+          <e p="GameManager.cs" t="Include" />
           <e p="PlatformSpawner.cs" t="Include" />
           <e p="PlayerController.cs" t="Include" />
           <e p="ScoreManager.cs" t="Include" />

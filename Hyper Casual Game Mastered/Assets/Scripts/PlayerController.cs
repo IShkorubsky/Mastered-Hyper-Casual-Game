@@ -23,10 +23,12 @@ public class PlayerController : MonoBehaviour
     public Vector2 dragPosition;
 
     private Camera _mainCamera;
+    private AudioSource _jumpSound;
 
     private void Start()
     {
         _mainCamera = Camera.main;
+        _jumpSound = GetComponent<AudioSource>();
         myRigidbody2D = GetComponent<Rigidbody2D>();
     }
 
@@ -40,6 +42,7 @@ public class PlayerController : MonoBehaviour
                 myRigidbody2D.velocity = new Vector2(0, jumpForce);
                 ScoreManager.Instance.AddScore();
                 gravityForce += 0.005f;
+                GameManager.Instance.ambientMusic.pitch += 0.005f;
                 _mainCamera.backgroundColor = other.gameObject.GetComponent<SpriteRenderer>().color;
                 JumpEffect();
                 DestroyAndCreateNewPlatform(other);
@@ -50,6 +53,7 @@ public class PlayerController : MonoBehaviour
     private void JumpEffect()
     {
         Destroy(Instantiate(jumpEffect,transform.position,Quaternion.identity),0.5f);
+        _jumpSound.Play();
     }
 
     private void DestroyAndCreateNewPlatform(Collider2D platform)
@@ -107,7 +111,7 @@ public class PlayerController : MonoBehaviour
     {
         if (transform.position.y < _mainCamera.transform.position.y - 15)
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            GameManager.Instance.GameOver();
         }
     }
 }

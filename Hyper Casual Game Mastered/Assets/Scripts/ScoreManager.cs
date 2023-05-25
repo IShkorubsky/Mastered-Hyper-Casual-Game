@@ -11,7 +11,7 @@ public class ScoreManager : MonoBehaviour
 
     public static ScoreManager Instance;
     
-    private int _currentScore;
+    public int currentScore;
 
     private void Start()
     {
@@ -19,18 +19,18 @@ public class ScoreManager : MonoBehaviour
         {
             Instance = this;
         }
-        _currentScore = 0;
+        currentScore = 0;
         bestScoreText.text = PlayerPrefs.GetInt("Best").ToString();
     }
 
     public void AddScore()
     {
-        _currentScore++;
-        currentScoreText.text = _currentScore.ToString();
-        if (_currentScore > PlayerPrefs.GetInt("Best",0))
+        currentScore++;
+        currentScoreText.text = currentScore.ToString();
+        if (currentScore > PlayerPrefs.GetInt("Best",0))
         {
-            bestScoreText.text = _currentScore.ToString();
-            PlayerPrefs.SetInt("Best",_currentScore);
+            bestScoreText.text = currentScore.ToString();
+            PlayerPrefs.SetInt("Best",currentScore);
         }
     }
 }
